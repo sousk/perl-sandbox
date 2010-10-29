@@ -2,6 +2,7 @@ use strict;
 use warnings;
 use Data::Dump qw(dump);
 
+use utf8;
 use Text::MicroTemplate;
 use Text::MicroTemplate::Extended;
 
@@ -22,9 +23,19 @@ sub render {
 		use_cache => 1,
 		template_args => {
 			blog_entries => [
-				{title => 'curry', body=>"hoehoe"},
-				{title => 'naan', body=>"fugafuga"},
+				{title => 'curry', body=>"<p style='font-size:300px;'>I'm malicious str!</p>"},
+				{title => 'naan', body=>"I'm まるちばいともじ〠"},
 			],
+			fn => {
+				'utf8safe' => sub {
+					my $str = shift;
+					utf8::encode($str);
+					$str;
+				},
+				'upper' => sub {
+					uc shift;
+				},
+			},
 		},
 	);
 	$mt->render('ext');
